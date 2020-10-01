@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "796292787521",
+    "firebase_url": "https://fluxomind-6d2f7.firebaseio.com",
+    "project_id": "fluxomind-6d2f7",
+    "storage_bucket": "fluxomind-6d2f7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796292787521:android:f44e1b10ad65538ebc05c0",
+        "android_client_info": {
+          "package_name": "com.estagio.fluxoMind"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "796292787521-v8c83ama6vko5tva1nccrj6p3d00q4jq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5yR93OsWvLWUS3f3G4NuOtuqiLXs784Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "796292787521-v8c83ama6vko5tva1nccrj6p3d00q4jq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
