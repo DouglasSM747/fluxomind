@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fluxoMind/pages/question.dart';
+import 'package:fluxoMind/pages/student/question.dart';
 import 'package:fluxoMind/services/atividades.dart';
-import 'package:fluxoMind/services/user.dart';
+import 'package:fluxoMind/services/studentClass.dart';
+import 'package:fluxoMind/widgets/AppWidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Selection extends StatelessWidget {
@@ -60,11 +61,10 @@ class _SelectionPageState extends State<SelectionPage> {
   }
 
   Widget atividadeWidget(int index) {
-    if (User.listAtv[index].status == true) {
+    if (Student.listAtv[index].status == true) {
       return FlatButton(
-        onPressed: () {
-          print(User.listAtv[1].status);
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => Question(User.listAtv[index])));
+        onPressed: () async {
+          await AppWidget.screenChange(context, Question(Student.listAtv[index]));
         },
         child: Text(
           (index + 1).toString(),

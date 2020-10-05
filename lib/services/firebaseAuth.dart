@@ -31,4 +31,20 @@ class ServiceConnection {
       return null;
     }
   }
+
+  // Email & Password Sign Up
+  Future<String> createUserWithEmailAndPassword(String email, String password) async {
+    try {
+      final createdUser = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      // Update the username
+      await createdUser.user.reload();
+      return createdUser.user.uid;
+    } on FirebaseAuthException catch (e) {
+      print(e.code);
+      return null;
+    }
+  }
 }

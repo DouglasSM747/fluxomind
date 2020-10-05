@@ -1,10 +1,12 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:fluxoMind/pages/selection.dart';
+import 'package:fluxoMind/pages/student/selection.dart';
 import 'package:fluxoMind/services/atividades.dart';
-import 'package:fluxoMind/services/user.dart';
+import 'package:fluxoMind/services/studentClass.dart';
 import 'package:fluxoMind/widgets/AppWidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:collection/collection.dart';
+import 'package:photo_view/photo_view.dart';
 
 class Question extends StatelessWidget {
   Question(this.myAtividadeAtual);
@@ -37,38 +39,31 @@ class QuestionPage extends StatefulWidget {
   _QuestionPageState createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> {
-  void dialogFluxogramas(int numFluxograma, String pathImage) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Fluxograma " + numFluxograma.toString()),
-          content: SingleChildScrollView(
-            child: Image.asset(pathImage, fit: BoxFit.contain),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("ok"),
-            )
-          ],
-        );
-      },
+class DetailScreen extends StatelessWidget {
+  @override
+  DetailScreen(String image) {
+    this.imagePath = image;
+  }
+  String imagePath;
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PhotoView(backgroundDecoration: new BoxDecoration(color: Colors.transparent), imageProvider: AssetImage(imagePath)),
     );
   }
+}
 
-  void validaResp(List<bool> listaResposta, List<bool> listaSolucao) {
+class _QuestionPageState extends State<QuestionPage> {
+  int _current = 0; //atual index from card
+
+  void validaResp(List<dynamic> listaResposta, List<dynamic> listaSolucao) {
     Function eq = const ListEquality().equals;
     widget.atividadeAtual.numTentativas++;
     // widget.atividadeAtual.numTentativas += 1;
     if (eq(listaResposta, listaSolucao)) {
       //Resposta Correta
       if (widget.atividadeAtual.number < Atividade.numberAtividades) {
-        Atividade.desbloquearAtividade(User.listAtv, widget.atividadeAtual.number + 1);
-        Atividade.attDataBaseValues(User.listAtv, User.id); // Atualiza o banco de atividades
+        Atividade.desbloquearAtividade(Student.listAtv, widget.atividadeAtual.number + 1);
+        Atividade.attDataBaseValues(Student.listAtv, Student.id); // Atualiza o banco de atividades
         AppWidget.dialog(
           context,
           "Alerta",
@@ -79,7 +74,7 @@ class _QuestionPageState extends State<QuestionPage> {
         );
       } else {
         // Finalizou todas atividades
-        Atividade.attDataBaseValues(User.listAtv, User.id); // Atualiza o banco de atividades
+        Atividade.attDataBaseValues(Student.listAtv, Student.id); // Atualiza o banco de atividades
         AppWidget.dialog(
           context,
           "Alerta",
@@ -92,7 +87,7 @@ class _QuestionPageState extends State<QuestionPage> {
     } else {
       // Resposta incorreta
       widget.atividadeAtual.numErros++;
-      Atividade.attDataBaseValues(User.listAtv, User.id); // Atualiza o banco de atividades
+      Atividade.attDataBaseValues(Student.listAtv, Student.id); // Atualiza o banco de atividades
       AppWidget.dialog(context, "Alerta", "Verique sua resposta, infelizmente tem um erro!");
     }
   }
@@ -106,20 +101,36 @@ class _QuestionPageState extends State<QuestionPage> {
         children: [
           SizedBox(height: 20),
           FlatButton(child: Icon(Icons.info), onPressed: () => AppWidget.dialog(context, "Informação", widget.atividadeAtual.message)),
-          Flexible(
-            fit: FlexFit.tight,
-            child: ListView.builder(
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: CarouselSlider.builder(
               itemCount: widget.atividadeAtual.pathImages.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-                  child: AppWidget.button(
-                      "Ver fluxograma " + (index + 1).toString(), () => dialogFluxogramas(index + 1, widget.atividadeAtual.pathImages[index])),
-                );
+              itemBuilder: (BuildContext context, int itemIndex) {
+                return FlatButton(
+                    onPressed: () async {
+                      await AppWidget.screenChange(context, DetailScreen(widget.atividadeAtual.pathImages[itemIndex]));
+                    },
+                    child: Image.asset(widget.atividadeAtual.pathImages[itemIndex]));
               },
+              options: CarouselOptions(
+                autoPlay: false,
+                enlargeCenterPage: true,
+                viewportFraction: 0.5,
+                aspectRatio: 1.9,
+                initialPage: 0,
+                onPageChanged: (int index, CarouselPageChangedReason reason) {
+                  setState(() {
+                    _current = index;
+                  });
+                },
+              ),
             ),
           ),
-          Center(child: Text("Selecione a alternativas corretas sobre os fluxogramas apresentados: ", style: TextStyle(fontSize: 16))),
+          Text(
+            "Selecione a alternativas corretas sobre os fluxogramas apresentados: ",
+            style: TextStyle(fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
           Flexible(
             fit: FlexFit.tight,
             child: ListView(

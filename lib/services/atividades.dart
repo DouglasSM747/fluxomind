@@ -18,7 +18,7 @@ class Atividade {
   int numErros = 0;
 
   List<String> pathImages = new List<String>();
-  Map<String, bool> alternativas;
+  Map<String, dynamic> alternativas;
   List<bool> respostas = List<bool>();
 
   Atividade.fromJson(Map<String, dynamic> json) {
@@ -27,6 +27,7 @@ class Atividade {
     message = json['message'];
     numTentativas = json['numTentativas'];
     numErros = json['numErros'];
+    alternativas = json['alternativas'];
     pathImages = json['pathImages'].cast<String>();
     respostas = json['respostas'].cast<bool>();
   }
@@ -35,6 +36,7 @@ class Atividade {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['number'] = this.number;
     data['status'] = this.status;
+    data['alternativas'] = this.alternativas;
     data['message'] = this.message;
     data['numTentativas'] = this.numTentativas;
     data['numErros'] = this.numErros;
@@ -133,15 +135,18 @@ class Atividade {
     //---------------------- Atualizar informações  --------------//
 
     await _getDataBaseValues(userId).then(
-      (value) {
-        if (value.length != 0) {
-          for (var i = 0; i < value.length; i++) {
-            Map atividadeMap = jsonDecode(value[i]);
-            listAtividades[i] = Atividade.fromJson(atividadeMap);
+      (listResult) {
+        if (listResult != null) {
+          if (listResult.length != 0) {
+            for (var i = 0; i < listResult.length; i++) {
+              Map atividadeMap = jsonDecode(listResult[i]);
+              listAtividades[i] = Atividade.fromJson(atividadeMap);
+            }
           }
         }
       },
     );
+    print(listAtividades[0].alternativas);
     return listAtividades;
   }
 }

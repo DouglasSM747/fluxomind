@@ -10,8 +10,8 @@ class ServiceCrudFireStore {
     print("Atividade Upada");
   }
 
-  Future<String> isValidUser(String email) async {
-    QuerySnapshot querySnapshot = await _db.collection("user").get();
+  Future<String> isValidUser({String email, String tipoUser}) async {
+    QuerySnapshot querySnapshot = await _db.collection(tipoUser).get();
 
     for (var i = 0; i < querySnapshot.docs.length; i++) {
       if (querySnapshot.docs[i].data()['email'] == email.trim()) {
@@ -22,11 +22,15 @@ class ServiceCrudFireStore {
   }
 
   Future<List<String>> getListAtvUser(String userId) async {
-    DocumentSnapshot documentSnapshot = await _db.collection('user').doc(userId).get();
+    DocumentSnapshot documentSnapshot = await _db.collection('aluno').doc(userId).get();
     try {
-      return List<String>.from(documentSnapshot.data()['listaAtv']);
+      var list = documentSnapshot.data()['listaAtv'];
+      if (list != null) {
+        return List<String>.from(list);
+      } else {
+        return null;
+      }
     } on Exception catch (e) {
-      print(e);
       return null;
     }
   }

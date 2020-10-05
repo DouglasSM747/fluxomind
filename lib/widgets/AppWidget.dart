@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluxoMind/services/atividades.dart';
 
 class AppWidget extends StatelessWidget {
   @override
@@ -47,7 +46,13 @@ class AppWidget extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: new BorderRadius.circular(10.0),
         ),
-        child: Text(text, style: TextStyle(fontSize: sizeFont)),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: sizeFont,
+          ),
+        ),
         onPressed: voidCallback,
       ),
     );
