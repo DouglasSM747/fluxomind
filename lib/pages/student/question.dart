@@ -1,34 +1,14 @@
+import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluxoMind/pages/student/selection.dart';
 import 'package:fluxoMind/services/atividades.dart';
 import 'package:fluxoMind/services/studentClass.dart';
 import 'package:fluxoMind/widgets/AppWidget.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:collection/collection.dart';
-import 'package:photo_view/photo_view.dart';
+import 'dart:convert';
 
-class Question extends StatelessWidget {
-  Question(this.myAtividadeAtual);
-  final Atividade myAtividadeAtual;
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        textTheme: GoogleFonts.gloriaHallelujahTextTheme(
-          Theme.of(context).textTheme,
-        ),
-        primarySwatch: Colors.green,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      title: "Login Screen",
-      home: QuestionPage(
-        atividadeAtual: myAtividadeAtual,
-      ),
-    );
-  }
-}
+import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 
 class QuestionPage extends StatefulWidget {
   final Atividade atividadeAtual;
@@ -41,35 +21,75 @@ class QuestionPage extends StatefulWidget {
 
 class DetailScreen extends StatelessWidget {
   @override
-  DetailScreen(String image) {
-    this.imagePath = image;
+  DetailScreen(Uint8List image) {
+    this.imageMemory = image;
   }
-  String imagePath;
+  Uint8List imageMemory;
+
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PhotoView(backgroundDecoration: new BoxDecoration(color: Colors.transparent), imageProvider: AssetImage(imagePath)),
+      body: Column(
+        children: [
+          SizedBox(height: 30),
+          Center(child: Text("Você pode interagir com a imagem para dar Zoom")),
+          Container(
+            child: PinchZoomImage(
+              image: Image.memory(
+                imageMemory,
+                fit: BoxFit.fitWidth,
+              ),
+              zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
+              hideStatusBarWhileZooming: true,
+              onZoomStart: () {
+                print('Zoom started');
+              },
+              onZoomEnd: () {
+                print('Zoom finished');
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }
 
 class _QuestionPageState extends State<QuestionPage> {
-  int _current = 0; //atual index from card
+  int current = 0; //atual index from card
+  int quantidadeAtividades = 0;
+  List<bool> respostasOrdem = new List<bool>();
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      quantidadeAtividades = Atividade.numberAtividades;
+      // ! Solução temporaria para zerar alternativas
+      widget.atividadeAtual.alternativas.forEach((key, value) {
+        widget.atividadeAtual.alternativas[key] = false;
+      });
+    });
+  }
+
+  // Transforma a String em Base 64 em Imagem
+  Uint8List _createImagemFromBase64(String b64) {
+    Uint8List bytes = base64.decode(b64);
+    return bytes;
+  }
 
   void validaResp(List<dynamic> listaResposta, List<dynamic> listaSolucao) {
     Function eq = const ListEquality().equals;
     widget.atividadeAtual.numTentativas++;
-    // widget.atividadeAtual.numTentativas += 1;
     if (eq(listaResposta, listaSolucao)) {
+      widget.atividadeAtual.concluded = true;
       //Resposta Correta
-      if (widget.atividadeAtual.number < Atividade.numberAtividades) {
-        Atividade.desbloquearAtividade(Student.listAtv, widget.atividadeAtual.number + 1);
+      if (widget.atividadeAtual.number < quantidadeAtividades) {
         Atividade.attDataBaseValues(Student.listAtv, Student.id); // Atualiza o banco de atividades
         AppWidget.dialog(
           context,
           "Alerta",
-          "Parabéns, atividade respondida com sucesso, pressione voltar pois uma nova atividade foi desbloqueada!",
+          "Parabéns, atividade respondida com sucesso!",
           voidCallback: () {
-            AppWidget.screenChange(context, Selection());
+            AppWidget.screenChange(context, SelectionPage());
           },
         );
       } else {
@@ -80,7 +100,7 @@ class _QuestionPageState extends State<QuestionPage> {
           "Alerta",
           "Parabéns, você finalizou todas atividades até o momento. Bom trabalho!",
           voidCallback: () {
-            AppWidget.screenChange(context, Selection());
+            AppWidget.screenChange(context, SelectionPage());
           },
         );
       }
@@ -95,22 +115,28 @@ class _QuestionPageState extends State<QuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
       resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 20),
           FlatButton(child: Icon(Icons.info), onPressed: () => AppWidget.dialog(context, "Informação", widget.atividadeAtual.message)),
+          Text(
+            "Arraste para o lado e visualize os outros fluxogramas, caso deseje dar Zoom, basta clicar no desejado!",
+            style: TextStyle(fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
           Container(
             width: MediaQuery.of(context).size.width,
             child: CarouselSlider.builder(
               itemCount: widget.atividadeAtual.pathImages.length,
               itemBuilder: (BuildContext context, int itemIndex) {
                 return FlatButton(
-                    onPressed: () async {
-                      await AppWidget.screenChange(context, DetailScreen(widget.atividadeAtual.pathImages[itemIndex]));
+                    onPressed: () {
+                      AppWidget.screenChange(context, DetailScreen(_createImagemFromBase64(widget.atividadeAtual.pathImages[itemIndex])));
                     },
-                    child: Image.asset(widget.atividadeAtual.pathImages[itemIndex]));
+                    child: Image.memory(_createImagemFromBase64(widget.atividadeAtual.pathImages[itemIndex])));
               },
               options: CarouselOptions(
                 autoPlay: false,
@@ -120,7 +146,7 @@ class _QuestionPageState extends State<QuestionPage> {
                 initialPage: 0,
                 onPageChanged: (int index, CarouselPageChangedReason reason) {
                   setState(() {
-                    _current = index;
+                    current = index;
                   });
                 },
               ),
@@ -147,7 +173,11 @@ class _QuestionPageState extends State<QuestionPage> {
               }).toList(),
             ),
           ),
-          AppWidget.button("Responder", () => validaResp(widget.atividadeAtual.respostas, widget.atividadeAtual.alternativas.values.toList()))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child:
+                AppWidget.button("Responder", () => validaResp(widget.atividadeAtual.respostas, widget.atividadeAtual.alternativas.values.toList())),
+          )
         ],
       ),
     );

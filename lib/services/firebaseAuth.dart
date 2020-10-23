@@ -36,8 +36,8 @@ class ServiceConnection {
   Future<String> createUserWithEmailAndPassword(String email, String password) async {
     try {
       final createdUser = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: email.trim(),
+        password: password.trim(),
       );
       // Update the username
       await createdUser.user.reload();

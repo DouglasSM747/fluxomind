@@ -41,20 +41,22 @@ class _LoginPageState extends State<LoginPage> {
   ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 60),
-            Center(child: Text("FluxoMind", style: TextStyle(fontSize: 70))),
-            SizedBox(height: 60),
-            AppWidget.formText(emailInput, "Digite email", Icons.email),
+            SizedBox(height: 70),
+            Image.asset("assets/images/logo.png"),
+            SizedBox(height: 30),
+            AppWidget.formText(context, emailInput, "Digite email", Icons.email),
             SizedBox(height: 20),
-            AppWidget.formText(passwordInput, "Digite sua senha", Icons.lock, password: true),
+            AppWidget.formText(context, passwordInput, "Digite sua senha", Icons.lock, password: true),
             SizedBox(height: 20),
-            Text("Eu sou: ", style: TextStyle(fontSize: 20)),
             radioButtons(),
             SizedBox(height: 20),
             AppWidget.button("Entrar", () {
@@ -64,10 +66,16 @@ class _LoginPageState extends State<LoginPage> {
                     if (resp != "") {
                       if (tipoUserLogando == "aluno") {
                         Student.id = resp;
-                        await Atividade.carregarFasesUser(resp).then((value) => Student.listAtv = value);
-                        await AppWidget.screenChange(context, Selection());
+                        await Atividade.carregarFasesUser(resp).then((value) {
+                          Student.listAtv = value;
+                        });
+                        AppWidget.screenChange(context, SelectionPage());
                       } else if (tipoUserLogando == "professor") {
-                        await AppWidget.screenChange(context, MenuTeacherPage());
+                        setState(() {
+                          Teacher.id = resp;
+                          Teacher.email = emailInput.text;
+                        });
+                        AppWidget.screenChange(context, MenuTeacherPage());
                       }
                     } else {
                       AppWidget.dialog(context, "Alerta", "Usuario não cadastrado no sistema!");
@@ -77,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                   AppWidget.dialog(context, "Alerta", "Verifique suas credenciais!");
                 }
               });
-            }, sizeFont: 25)
+            }, sizeFont: 25, width: screenWidth - 30)
           ],
         ),
       ),
@@ -88,10 +96,12 @@ class _LoginPageState extends State<LoginPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Text("Eu sou: ", style: TextStyle(fontSize: 15)),
         Row(
           children: [
             Text("Professor"),
             Radio(
+              activeColor: Colors.black,
               groupValue: tipoUserLogando,
               onChanged: (String value) {
                 setState(
@@ -108,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Text("Aluno"),
             Radio(
+              activeColor: Colors.black,
               groupValue: tipoUserLogando,
               onChanged: (String value) {
                 setState(

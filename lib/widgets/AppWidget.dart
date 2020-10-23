@@ -1,44 +1,48 @@
 import 'package:flutter/material.dart';
 
 class AppWidget extends StatelessWidget {
+  static double sizeScreenWidth = 0;
   @override
   Widget build(BuildContext context) {
     return Container();
   }
 
-  static TextFormField formText(TextEditingController textEditingController, String text, IconData icon, {bool password = false}) {
-    return TextFormField(
-      controller: textEditingController,
-      autofocus: false,
-      decoration: InputDecoration(
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          borderSide: BorderSide(color: Colors.black, width: 1.5),
+  static Widget formText(BuildContext context, TextEditingController textEditingController, String text, IconData icon, {bool password = false}) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width - 30,
+      child: TextFormField(
+        controller: textEditingController,
+        autofocus: false,
+        decoration: InputDecoration(
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black, width: 1.5),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black, width: 1.5),
+          ),
+          hintText: text,
+          prefixIcon: Icon(
+            icon,
+            color: Colors.black,
+          ),
+          hintStyle: TextStyle(color: Colors.black),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          borderSide: BorderSide(color: Colors.black, width: 1.5),
-        ),
-        hintText: text,
-        prefixIcon: Icon(
-          icon,
-          color: Colors.black,
-        ),
-        hintStyle: TextStyle(color: Colors.black),
+        style: TextStyle(color: Colors.black),
+        obscureText: password,
+        textAlign: TextAlign.start,
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'Please enter some value';
+          }
+          return null;
+        },
       ),
-      style: TextStyle(color: Colors.black),
-      obscureText: password,
-      textAlign: TextAlign.start,
-      validator: (value) {
-        if (value.isEmpty) {
-          return 'Please enter some value';
-        }
-        return null;
-      },
     );
   }
 
-  static Widget button(String text, VoidCallback voidCallback, {double sizeFont, double width = 200, double height = 50}) {
+  static Widget button(String text, VoidCallback voidCallback, {double sizeFont, double width = 300, double height = 50}) {
     return SizedBox(
       width: width,
       height: height,
@@ -46,10 +50,12 @@ class AppWidget extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: new BorderRadius.circular(10.0),
         ),
+        color: Color.fromRGBO(0, 83, 156, 1),
         child: Text(
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
+            color: Colors.white,
             fontSize: sizeFont,
           ),
         ),
@@ -83,7 +89,13 @@ class AppWidget extends StatelessWidget {
     );
   }
 
-  static screenChange(BuildContext context, Widget screen) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => screen));
+  //* Função responsavel por fazer a mudança de telas, recebe como parâmetro um Widget(Deve ser uma screen, caso não, resulta em erro)
+  static void screenChange(BuildContext context, Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => screen,
+      ),
+    );
   }
 }
