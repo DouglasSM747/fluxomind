@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluxoMind/Utils/design.dart';
 import 'package:fluxoMind/pages/teacher/createQuestion.dart';
 import 'package:fluxoMind/pages/teacher/registerTeacher.dart';
+import 'package:fluxoMind/pages/teacher/status.dart';
 import 'package:fluxoMind/pages/teacher/studentsList.dart';
 import 'package:fluxoMind/widgets/AppWidget.dart';
 
@@ -18,56 +20,52 @@ class _MenuTeacherPageState extends State<MenuTeacherPage> {
   Widget build(BuildContext context) {
     var widhScreen = MediaQuery.of(context).size.width - 30;
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
+      backgroundColor: Design.corAzul,
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           SizedBox(height: 80),
-          Text("Bem Vindo Professor", style: TextStyle(fontSize: 35)),
+          Text("Bem Vindo Professor", style: TextStyle(fontSize: 35, color: Colors.white)),
           SizedBox(height: 30),
           Center(
-            child: AppWidget.button(
-                "Cadastrar estudante",
-                () => AppWidget.screenChange(
-                      context,
-                      RegisterStudentPage(),
-                    ),
+            child: AppWidget.button("Cadastrar estudante",
+                voidCallback: AppWidget.screenChange(
+                  context,
+                  RegisterStudentPage(),
+                ),
                 sizeFont: 25,
                 width: widhScreen,
                 height: 70),
           ),
           SizedBox(height: 30),
           Center(
-            child: AppWidget.button(
-                "Status Turma",
-                () => AppWidget.screenChange(
-                      context,
-                      ListStudentsPage(),
-                    ),
+            child: AppWidget.button("Status Turma",
+                voidCallback: AppWidget.screenChange(
+                  context,
+                  StatusStudentPage(),
+                ),
                 sizeFont: 25,
                 width: widhScreen,
                 height: 70),
           ),
           SizedBox(height: 30),
           Center(
-            child: AppWidget.button(
-                "Verificar contas",
-                () => AppWidget.screenChange(
-                      context,
-                      ListStudentsPage(),
-                    ),
+            child: AppWidget.button("Verificar contas",
+                voidCallback: AppWidget.screenChange(
+                  context,
+                  ListStudentsPage(),
+                ),
                 sizeFont: 25,
                 width: widhScreen,
                 height: 70),
           ),
           SizedBox(height: 30),
           Center(
-            child: AppWidget.button(
-                "Criar Atividade",
-                () => AppWidget.screenChange(
-                      context,
-                      CreateQuestionPage(),
-                    ),
+            child: AppWidget.button("Criar Atividade",
+                voidCallback: AppWidget.screenChange(
+                  context,
+                  CreateQuestionPage(),
+                ),
                 sizeFont: 25,
                 width: widhScreen,
                 height: 70),

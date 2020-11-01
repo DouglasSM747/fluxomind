@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluxoMind/Utils/design.dart';
 import 'package:fluxoMind/pages/student/selection.dart';
 import 'package:fluxoMind/pages/teacher/menuTeacher.dart';
 import 'package:fluxoMind/services/atividades.dart';
@@ -39,19 +40,50 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordInput = new TextEditingController();
   ServiceConnection serviceConnection = new ServiceConnection();
   ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
+
+  void validateLogin_GetDateUser() {
+    serviceConnection.signInWithEmailAndPassword(emailInput.text, passwordInput.text).then((value) async {
+      if (value != null) {
+        serviceCrudFireStore.isValidUser(email: emailInput.text, tipoUser: tipoUserLogando).then((idUser) async {
+          if (idUser != "") {
+            // Verifica o tipo de usuario que está logado
+            if (tipoUserLogando == "aluno") {
+              Student.id = idUser;
+              await Atividade.loadTasksStudent(idUser).then((value) {
+                Student.listAtv = value;
+              });
+              AppWidget.screenChange(context, SelectionPage());
+            } else if (tipoUserLogando == "professor") {
+              Teacher.id = idUser;
+              Teacher.email = emailInput.text;
+              Teacher.loadStudentsInformations; // Carrega as informações utilizadas para analises da turma na classe [Status]
+              AppWidget.screenChange(context, MenuTeacherPage());
+            }
+          } else {
+            AppWidget.dialog(context, "Alerta", "Usuario não cadastrado no sistema!");
+          }
+        });
+      } else {
+        AppWidget.dialog(context, "Alerta", "Verifique suas credenciais!");
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
+      backgroundColor: Design.corAzul,
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(height: 70),
-            Image.asset("assets/images/logo.png"),
+            Image.asset(
+              "assets/images/logo.png",
+              fit: BoxFit.contain,
+            ),
             SizedBox(height: 30),
             AppWidget.formText(context, emailInput, "Digite email", Icons.email),
             SizedBox(height: 20),
@@ -59,33 +91,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 20),
             radioButtons(),
             SizedBox(height: 20),
-            AppWidget.button("Entrar", () {
-              serviceConnection.signInWithEmailAndPassword(emailInput.text, passwordInput.text).then((value) async {
-                if (value != null) {
-                  serviceCrudFireStore.isValidUser(email: emailInput.text, tipoUser: tipoUserLogando).then((resp) async {
-                    if (resp != "") {
-                      if (tipoUserLogando == "aluno") {
-                        Student.id = resp;
-                        await Atividade.carregarFasesUser(resp).then((value) {
-                          Student.listAtv = value;
-                        });
-                        AppWidget.screenChange(context, SelectionPage());
-                      } else if (tipoUserLogando == "professor") {
-                        setState(() {
-                          Teacher.id = resp;
-                          Teacher.email = emailInput.text;
-                        });
-                        AppWidget.screenChange(context, MenuTeacherPage());
-                      }
-                    } else {
-                      AppWidget.dialog(context, "Alerta", "Usuario não cadastrado no sistema!");
-                    }
-                  });
-                } else {
-                  AppWidget.dialog(context, "Alerta", "Verifique suas credenciais!");
-                }
-              });
-            }, sizeFont: 25, width: screenWidth - 30)
+            AppWidget.button("Entrar", voidCallback: validateLogin_GetDateUser, sizeFont: 25, width: screenWidth - 30)
           ],
         ),
       ),
@@ -96,12 +102,12 @@ class _LoginPageState extends State<LoginPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Eu sou: ", style: TextStyle(fontSize: 15)),
+        Text("Eu sou: ", style: TextStyle(fontSize: 15, color: Colors.white)),
         Row(
           children: [
-            Text("Professor"),
+            Text("Professor", style: TextStyle(color: Colors.white)),
             Radio(
-              activeColor: Colors.black,
+              activeColor: Colors.white,
               groupValue: tipoUserLogando,
               onChanged: (String value) {
                 setState(
@@ -116,9 +122,9 @@ class _LoginPageState extends State<LoginPage> {
         ),
         Row(
           children: [
-            Text("Aluno"),
+            Text("Aluno", style: TextStyle(color: Colors.white)),
             Radio(
-              activeColor: Colors.black,
+              activeColor: Colors.white,
               groupValue: tipoUserLogando,
               onChanged: (String value) {
                 setState(

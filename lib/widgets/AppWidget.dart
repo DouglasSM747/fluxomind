@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
 
 class AppWidget extends StatelessWidget {
   static double sizeScreenWidth = 0;
@@ -9,40 +10,47 @@ class AppWidget extends StatelessWidget {
 
   static Widget formText(BuildContext context, TextEditingController textEditingController, String text, IconData icon, {bool password = false}) {
     return SizedBox(
+      height: 60,
       width: MediaQuery.of(context).size.width - 30,
-      child: TextFormField(
-        controller: textEditingController,
-        autofocus: false,
-        decoration: InputDecoration(
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            borderSide: BorderSide(color: Colors.black, width: 1.5),
+      child: Container(
+        decoration: new BoxDecoration(color: Color.fromRGBO(242, 152, 41, 0.95), borderRadius: new BorderRadius.all(new Radius.circular(20))),
+        child: TextFormField(
+          controller: textEditingController,
+          autofocus: false,
+          decoration: InputDecoration(
+            hoverColor: Colors.red,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderSide: BorderSide(color: Color.fromRGBO(242, 152, 41, 0.95), width: 2.5),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderSide: BorderSide(color: Color.fromRGBO(242, 152, 41, 0.95), width: 2.5),
+            ),
+            hintText: text,
+            prefixIcon: Icon(
+              icon,
+              color: Colors.white,
+            ),
+            hintStyle: TextStyle(color: Colors.white),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            borderSide: BorderSide(color: Colors.black, width: 1.5),
+          style: TextStyle(
+            color: Colors.white,
           ),
-          hintText: text,
-          prefixIcon: Icon(
-            icon,
-            color: Colors.black,
-          ),
-          hintStyle: TextStyle(color: Colors.black),
+          obscureText: password,
+          textAlign: TextAlign.start,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Please enter some value';
+            }
+            return null;
+          },
         ),
-        style: TextStyle(color: Colors.black),
-        obscureText: password,
-        textAlign: TextAlign.start,
-        validator: (value) {
-          if (value.isEmpty) {
-            return 'Please enter some value';
-          }
-          return null;
-        },
       ),
     );
   }
 
-  static Widget button(String text, VoidCallback voidCallback, {double sizeFont, double width = 300, double height = 50}) {
+  static Widget button(String text, {@required VoidCallback voidCallback, double sizeFont, double width = 300, double height = 50}) {
     return SizedBox(
       width: width,
       height: height,
@@ -50,7 +58,7 @@ class AppWidget extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: new BorderRadius.circular(10.0),
         ),
-        color: Color.fromRGBO(0, 83, 156, 1),
+        color: Color.fromRGBO(242, 152, 41, 0.95),
         child: Text(
           text,
           textAlign: TextAlign.center,
@@ -67,30 +75,30 @@ class AppWidget extends StatelessWidget {
   static dialog(BuildContext context, String title, String message, {VoidCallback voidCallback}) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                if (voidCallback == null) {
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.of(context).pop();
-                  voidCallback();
-                }
-              },
-              child: Text("Ok"),
-            )
-          ],
-        );
-      },
+      builder: (context) => NetworkGiffyDialog(
+        image: Image.asset('assets/images/gif.gif'),
+        title: Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600)),
+        description: Text(
+          message,
+          textAlign: TextAlign.center,
+        ),
+        onlyOkButton: true,
+        buttonOkColor: Color.fromRGBO(217, 89, 123, 1),
+        entryAnimation: EntryAnimation.TOP,
+        onOkButtonPressed: () {
+          if (voidCallback == null) {
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(context).pop();
+            voidCallback();
+          }
+        },
+      ),
     );
   }
 
   //* Função responsavel por fazer a mudança de telas, recebe como parâmetro um Widget(Deve ser uma screen, caso não, resulta em erro)
-  static void screenChange(BuildContext context, Widget screen) {
+  static screenChange(BuildContext context, Widget screen) {
     Navigator.push(
       context,
       MaterialPageRoute(

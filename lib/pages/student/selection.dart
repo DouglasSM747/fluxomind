@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluxoMind/Utils/design.dart';
 import 'package:fluxoMind/pages/student/question.dart';
 import 'package:fluxoMind/services/atividades.dart';
 import 'package:fluxoMind/services/firebaseCloud.dart';
@@ -13,7 +14,6 @@ class SelectionPage extends StatefulWidget {
 }
 
 class _SelectionPageState extends State<SelectionPage> {
-  int quantidadeAtividades = 1;
   String emailTeacher = "";
   ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
 
@@ -25,21 +25,20 @@ class _SelectionPageState extends State<SelectionPage> {
           emailTeacher = value;
         });
       });
-      quantidadeAtividades = Atividade.numberAtividades;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
+      backgroundColor: Design.corAzul,
       resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 40),
-          Text("Email do professor: " + emailTeacher),
-          Center(child: Text("Selecione Uma Atividade", style: TextStyle(fontSize: 32))),
+          Text("Email do professor: " + emailTeacher, style: TextStyle(color: Colors.white)),
+          Center(child: Text("Selecione Uma Atividade", textAlign: TextAlign.center, style: TextStyle(fontSize: 32, color: Colors.white))),
           loadAtividades(),
         ],
       ),
@@ -47,14 +46,15 @@ class _SelectionPageState extends State<SelectionPage> {
   }
 
   Widget loadAtividades() {
-    if (quantidadeAtividades > 0) {
+    // Caso tenha atividades para o usuario, mostra elas
+    if (Atividade.numberAtividades > 0) {
       return Expanded(
         child: GridView.count(
           crossAxisCount: 3,
           mainAxisSpacing: 20,
           crossAxisSpacing: 20,
           children: List.generate(
-            quantidadeAtividades,
+            Atividade.numberAtividades,
             (index) {
               return atividadeWidget(index);
             },
@@ -62,11 +62,17 @@ class _SelectionPageState extends State<SelectionPage> {
         ),
       );
     } else {
+      // Caso não tenha atividades no momento, notifica o usuario
       return Container(
         color: Colors.transparent,
         child: Column(
           children: [
-            Center(child: Text("Seu professor ainda não postou uma atividade, tente novamente mais tarde!", style: TextStyle(fontSize: 28))),
+            Center(
+              child: Text(
+                "Seu professor ainda não postou uma atividade, tente novamente mais tarde!",
+                style: TextStyle(color: Colors.white, fontSize: 28),
+              ),
+            ),
             Center(
               child: Loading(indicator: BallPulseIndicator(), size: 150.0, color: Colors.blue),
             ),
@@ -76,55 +82,36 @@ class _SelectionPageState extends State<SelectionPage> {
     }
   }
 
+  Widget circleAtividade(int index, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: FlatButton(
+        onPressed: () {
+          AppWidget.screenChange(context, QuestionPage(atividadeAtual: Student.listAtv[index]));
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              (index + 1).toString() + " ",
+              style: TextStyle(fontSize: 30, color: Colors.white),
+            ),
+            Icon(
+              icon,
+            )
+          ],
+        ),
+        shape: new CircleBorder(),
+        color: Design.corLaranja,
+      ),
+    );
+  }
+
   Widget atividadeWidget(int index) {
     if (Student.listAtv[index].concluded) {
-      return Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: FlatButton(
-          onPressed: () {
-            AppWidget.screenChange(context, QuestionPage(atividadeAtual: Student.listAtv[index]));
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                (index + 1).toString() + " ",
-                style: TextStyle(fontSize: 30, color: Colors.white),
-              ),
-              Icon(
-                Icons.check_circle_outline,
-                color: Colors.green,
-              )
-            ],
-          ),
-          shape: new CircleBorder(),
-          color: Color.fromRGBO(0, 83, 156, 1),
-        ),
-      );
+      return circleAtividade(index, Icons.check_circle_outline);
     } else {
-      return Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: FlatButton(
-          onPressed: () {
-            AppWidget.screenChange(context, QuestionPage(atividadeAtual: Student.listAtv[index]));
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                (index + 1).toString() + " ",
-                style: TextStyle(fontSize: 30, color: Colors.white),
-              ),
-              Icon(
-                Icons.highlight_off,
-                color: Colors.red,
-              )
-            ],
-          ),
-          shape: new CircleBorder(),
-          color: Color.fromRGBO(0, 83, 156, 1),
-        ),
-      );
+      return circleAtividade(index, Icons.highlight_off);
     }
   }
 }

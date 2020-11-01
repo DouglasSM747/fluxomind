@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluxoMind/Utils/design.dart';
 import 'package:fluxoMind/services/firebaseCloud.dart';
 import 'package:fluxoMind/services/teacherClass.dart';
 
@@ -9,7 +10,7 @@ class ListStudentsPage extends StatefulWidget {
 
 class _ListStudentsPageState extends State<ListStudentsPage> {
   ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
-  List<Map<String, dynamic>> listEstudents = new List<Map<String, String>>();
+  List<Map<String, dynamic>> listEstudents = new List<Map<String, String>>(); // Armazena um MAP contendo o e-mail e senha do usuario
 
   // Carrega as credenciais dos alunos que estão na turma do atual professor
   void loadStudentsCredentials(String idTeacher) async {
@@ -24,7 +25,6 @@ class _ListStudentsPageState extends State<ListStudentsPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadStudentsCredentials(Teacher.id);
   }
@@ -32,13 +32,13 @@ class _ListStudentsPageState extends State<ListStudentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
+      backgroundColor: Design.corAzul,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 25),
-            Text("Lista de seus estudantes", style: TextStyle(fontSize: 30)),
+            Text("Lista de seus estudantes", style: TextStyle(fontSize: 30, color: Colors.white)),
             Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
@@ -46,12 +46,21 @@ class _ListStudentsPageState extends State<ListStudentsPage> {
                 itemCount: listEstudents.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text("Email: " + listEstudents[index]['email']),
-                    subtitle: Text("Senha: " + listEstudents[index]['password']),
+                    title: Text(
+                      "Email: " + listEstudents[index]['email'],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      "Senha: " + listEstudents[index]['password'],
+                      style: TextStyle(color: Colors.white),
+                    ),
                   );
                 },
                 separatorBuilder: (context, index) {
-                  return Divider();
+                  return Divider(
+                    color: Colors.white,
+                    height: 20,
+                  );
                 },
               ),
             )

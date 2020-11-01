@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluxoMind/Utils/design.dart';
 import 'package:fluxoMind/pages/teacher/menuTeacher.dart';
 import 'package:fluxoMind/services/atividades.dart';
 import 'package:fluxoMind/services/firebaseCloud.dart';
@@ -26,7 +27,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
   ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
 
   // Captura uma imagem da galeria do celular
-  Future imgFromGallery() async {
+  imgFromGallery() async {
     PickedFile image = await _picker.getImage(source: ImageSource.gallery);
     if (image == null) {
       print('No image selected.');
@@ -39,8 +40,8 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
 
   // Converte imagem para base 64, para enviar para o banco de dados
   Future<String> convertToBase64(String path) async {
-    print(path);
-    ByteData bytes = await rootBundle.load(path);
+    File file = new File(path);
+    final ByteData bytes = file.readAsBytesSync().buffer.asByteData();
     var buffer = bytes.buffer;
     return base64.encode(Uint8List.view(buffer));
   }
@@ -72,7 +73,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
     //Adicionando questões
     for (var i = 0; i < listTextEdit.length; i++) {
       if (listTextEdit[i].text.isNotEmpty) {
-        atividade.alternativas[listTextEdit[i].text] = listBoolAlternativas[i];
+        atividade.alternativas.add(listTextEdit[i].text);
         atividade.respostas.add(listBoolAlternativas[i]);
       }
     }
@@ -89,21 +90,22 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
+      backgroundColor: Design.corAzul,
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 30),
-            Text("Tela de criação de atividades", style: TextStyle(fontSize: 25)),
+            Text("Tela de criação de atividades", style: TextStyle(fontSize: 25, color: Colors.white)),
             SizedBox(height: 10),
             AppWidget.formText(context, textEditingControllerEnunciado, "Digite o enunciado da questão", Icons.description),
-            Text(" Selecione os fluxogramas que deseja adicionar à atividade"),
+            Text(
+              " Selecione os fluxogramas que deseja adicionar à atividade",
+              style: TextStyle(color: Colors.white),
+            ),
             SizedBox(height: 10),
-            AppWidget.button("Inserir imagem", () {
-              imgFromGallery();
-            }, sizeFont: 16),
+            AppWidget.button("Inserir imagem", voidCallback: imgFromGallery(), sizeFont: 16),
             SizedBox(height: 10),
             Container(
               height: 120,
@@ -118,9 +120,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
             SizedBox(height: 10),
             AppWidget.button(
               "Inserir questão",
-              () {
-                addQuestionsCheckBox();
-              },
+              voidCallback: addQuestionsCheckBox(),
               sizeFont: 16,
             ),
             SizedBox(height: 10),
@@ -139,7 +139,11 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                           width: 250,
                           child: TextFormField(
                             decoration: new InputDecoration(
+                              hintStyle: TextStyle(color: Colors.white),
                               hintText: "Digite a questão " + (index + 1).toString(),
+                            ),
+                            style: TextStyle(
+                              color: Colors.white,
                             ),
                             controller: listTextEdit[index],
                           ),
@@ -154,7 +158,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                         },
                       ),
                       FlatButton(
-                        onPressed: () => removeQuestionCheckBox(index),
+                        onPressed: removeQuestionCheckBox(index),
                         child: Icon(
                           Icons.remove,
                           color: Colors.red,
@@ -167,9 +171,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
             ),
             AppWidget.button(
               "Criar Atividade",
-              () {
-                createQuestion();
-              },
+              voidCallback: createQuestion(),
             )
           ],
         ),

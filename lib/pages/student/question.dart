@@ -1,13 +1,14 @@
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:fluxoMind/Utils/design.dart';
 import 'package:fluxoMind/pages/student/selection.dart';
 import 'package:fluxoMind/services/atividades.dart';
 import 'package:fluxoMind/services/studentClass.dart';
 import 'package:fluxoMind/widgets/AppWidget.dart';
 import 'package:collection/collection.dart';
 import 'dart:convert';
-
 import 'package:pinch_zoom_image_last/pinch_zoom_image_last.dart';
 
 class QuestionPage extends StatefulWidget {
@@ -21,10 +22,8 @@ class QuestionPage extends StatefulWidget {
 
 class DetailScreen extends StatelessWidget {
   @override
-  DetailScreen(Uint8List image) {
-    this.imageMemory = image;
-  }
-  Uint8List imageMemory;
+  DetailScreen(this.imageMemory);
+  final Uint8List imageMemory;
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +37,7 @@ class DetailScreen extends StatelessWidget {
                 imageMemory,
                 fit: BoxFit.fitWidth,
               ),
-              zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
+              zoomedBackgroundColor: Design.corLaranja,
               hideStatusBarWhileZooming: true,
               onZoomStart: () {
                 print('Zoom started');
@@ -56,22 +55,19 @@ class DetailScreen extends StatelessWidget {
 
 class _QuestionPageState extends State<QuestionPage> {
   int current = 0; //atual index from card
-  int quantidadeAtividades = 0;
-  List<bool> respostasOrdem = new List<bool>();
+
+  List<bool> respostasUser;
   @override
   void initState() {
     super.initState();
     setState(() {
-      quantidadeAtividades = Atividade.numberAtividades;
-      // ! Solução temporaria para zerar alternativas
-      widget.atividadeAtual.alternativas.forEach((key, value) {
-        widget.atividadeAtual.alternativas[key] = false;
-      });
+      // Inicializa a lista de resposta do usuario como "false" para as alternativas da questão
+      respostasUser = List.filled(widget.atividadeAtual.alternativas.length, false);
     });
   }
 
   // Transforma a String em Base 64 em Imagem
-  Uint8List _createImagemFromBase64(String b64) {
+  Uint8List _transformImageFromBase64(String b64) {
     Uint8List bytes = base64.decode(b64);
     return bytes;
   }
@@ -79,26 +75,17 @@ class _QuestionPageState extends State<QuestionPage> {
   void validaResp(List<dynamic> listaResposta, List<dynamic> listaSolucao) {
     Function eq = const ListEquality().equals;
     widget.atividadeAtual.numTentativas++;
+    // Verifica se a resposta é igual a solução do usuario
     if (eq(listaResposta, listaSolucao)) {
-      widget.atividadeAtual.concluded = true;
-      //Resposta Correta
-      if (widget.atividadeAtual.number < quantidadeAtividades) {
+      widget.atividadeAtual.concluded = true; // Marca a atividade como concluida
+
+      // Mostra a informação para o usuario
+      if (widget.atividadeAtual.number < Atividade.numberAtividades) {
         Atividade.attDataBaseValues(Student.listAtv, Student.id); // Atualiza o banco de atividades
         AppWidget.dialog(
           context,
           "Alerta",
           "Parabéns, atividade respondida com sucesso!",
-          voidCallback: () {
-            AppWidget.screenChange(context, SelectionPage());
-          },
-        );
-      } else {
-        // Finalizou todas atividades
-        Atividade.attDataBaseValues(Student.listAtv, Student.id); // Atualiza o banco de atividades
-        AppWidget.dialog(
-          context,
-          "Alerta",
-          "Parabéns, você finalizou todas atividades até o momento. Bom trabalho!",
           voidCallback: () {
             AppWidget.screenChange(context, SelectionPage());
           },
@@ -115,18 +102,26 @@ class _QuestionPageState extends State<QuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
+      backgroundColor: Design.corAzul,
       resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 20),
-          FlatButton(child: Icon(Icons.info), onPressed: () => AppWidget.dialog(context, "Informação", widget.atividadeAtual.message)),
-          Text(
-            "Arraste para o lado e visualize os outros fluxogramas, caso deseje dar Zoom, basta clicar no desejado!",
-            style: TextStyle(fontSize: 12),
-            textAlign: TextAlign.center,
+          SizedBox(height: 30),
+          Text("Enunciado", style: TextStyle(fontSize: 20, color: Colors.white)),
+          Container(
+            height: 70,
+            width: MediaQuery.of(context).size.width - 50,
+            child: Card(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(widget.atividadeAtual.message),
+                ),
+              ),
+            ),
           ),
+          Text("Caso deseje dar Zoom, basta clicar no desejado!", style: TextStyle(fontSize: 12, color: Colors.white), textAlign: TextAlign.center),
           Container(
             width: MediaQuery.of(context).size.width,
             child: CarouselSlider.builder(
@@ -134,9 +129,9 @@ class _QuestionPageState extends State<QuestionPage> {
               itemBuilder: (BuildContext context, int itemIndex) {
                 return FlatButton(
                     onPressed: () {
-                      AppWidget.screenChange(context, DetailScreen(_createImagemFromBase64(widget.atividadeAtual.pathImages[itemIndex])));
+                      AppWidget.screenChange(context, DetailScreen(_transformImageFromBase64(widget.atividadeAtual.pathImages[itemIndex])));
                     },
-                    child: Image.memory(_createImagemFromBase64(widget.atividadeAtual.pathImages[itemIndex])));
+                    child: Image.memory(_transformImageFromBase64(widget.atividadeAtual.pathImages[itemIndex])));
               },
               options: CarouselOptions(
                 autoPlay: false,
@@ -154,29 +149,52 @@ class _QuestionPageState extends State<QuestionPage> {
           ),
           Text(
             "Selecione a alternativas corretas sobre os fluxogramas apresentados: ",
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 15, color: Colors.white),
             textAlign: TextAlign.center,
           ),
           Flexible(
             fit: FlexFit.tight,
-            child: ListView(
-              children: widget.atividadeAtual.alternativas.keys.map((String key) {
-                return new CheckboxListTile(
-                  title: new Text(key),
-                  value: widget.atividadeAtual.alternativas[key],
-                  onChanged: (bool value) {
-                    setState(() {
-                      widget.atividadeAtual.alternativas[key] = value;
-                    });
-                  },
+            child: ListView.builder(
+              itemCount: widget.atividadeAtual.alternativas.length,
+              itemBuilder: (context, index) {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Card(
+                      color: Design.corRoxo,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width - 50,
+                          child: Text(
+                            widget.atividadeAtual.alternativas[index],
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: -10,
+                      child: Checkbox(
+                        value: respostasUser[index],
+                        onChanged: (bool value) {
+                          setState(() {
+                            respostasUser[index] = value;
+                          });
+                        },
+                      ),
+                    )
+                  ],
                 );
-              }).toList(),
+              },
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child:
-                AppWidget.button("Responder", () => validaResp(widget.atividadeAtual.respostas, widget.atividadeAtual.alternativas.values.toList())),
+            child: AppWidget.button(
+              "Responder",
+              voidCallback: () => validaResp(widget.atividadeAtual.respostas, respostasUser),
+            ),
           )
         ],
       ),

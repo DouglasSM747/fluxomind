@@ -5,6 +5,7 @@ import 'package:fluxoMind/services/firebaseCloud.dart';
 
 class Atividade {
   static int numberAtividades = 0;
+  // ignore: empty_constructor_bodies
   Atividade() {}
   bool concluded = false;
   int number = 0;
@@ -13,7 +14,7 @@ class Atividade {
   int numErros = 0;
 
   List<String> pathImages = new List<String>();
-  Map<String, dynamic> alternativas = new Map<String, dynamic>();
+  List<dynamic> alternativas = new List<dynamic>();
   List<bool> respostas = List<bool>();
 
   Atividade.fromJson(Map<String, dynamic> json) {
@@ -40,10 +41,12 @@ class Atividade {
     return data;
   }
 
+  // Funcão que ao ser chamada atualiza o status das atividades do presente usuario
   static attDataBaseValues(List<Atividade> listAtividades, String userId) async {
     List<String> atividadesJson = List<String>();
 
     for (int i = 0; i < numberAtividades; i++) {
+      // Transforma a classe Atividade do estudante em Json, para depois ser possivel recuperar o dado
       String json = jsonEncode(listAtividades[i].toJson());
       atividadesJson.add(json);
     }
@@ -54,9 +57,12 @@ class Atividade {
     // prefs.setStringList("atividadesList", atividadesJson);
 
     ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
+
+    // * SOBE AS ATIVIDADES PARA O FIREBASE EM FORMATO DE JSON
     serviceCrudFireStore.updateAtividadesList(userId, atividadesJson);
   }
 
+  // Retorna as atividades(e seus status) do presente usuario
   static Future<List<String>> _getDataBaseValues(String userId) async {
     List<String> listAtividades = new List<String>();
     ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
@@ -68,7 +74,8 @@ class Atividade {
     return listAtividades;
   }
 
-  static Future<List<Atividade>> carregarFasesUser(String userId) async {
+  // Carrega as atividades que o usuario possui
+  static Future<List<Atividade>> loadTasksStudent(String userId) async {
     List<Atividade> listAtividades = new List<Atividade>();
 
     //---------------------- Atualizar informações  --------------//
@@ -78,7 +85,6 @@ class Atividade {
         if (listResult != null) {
           if (listResult.length != 0) {
             Atividade.numberAtividades = listResult.length;
-            print(listResult.length);
             for (var i = 0; i < listResult.length; i++) {
               Map atividadeMap = jsonDecode(listResult[i]);
               listAtividades.add(Atividade.fromJson(atividadeMap));
