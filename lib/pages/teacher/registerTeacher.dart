@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluxoMind/Utils/design.dart';
 import 'package:fluxoMind/pages/teacher/menuTeacher.dart';
 import 'package:fluxoMind/services/firebaseAuth.dart';
 import 'package:fluxoMind/services/firebaseCloud.dart';
@@ -20,28 +21,30 @@ class _RegisterStudentState extends State<RegisterStudentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 214, 98, 1),
+      backgroundColor: Design.corAzul,
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 25),
-            Text("Cadastro de estudante", style: TextStyle(fontSize: 30)),
+            Text("Cadastro de estudante", style: TextStyle(fontSize: 30, color: Colors.white)),
             AppWidget.formText(context, emailInput, "Email", Icons.email),
             SizedBox(height: 10),
-            Center(
-                child: Text("Atenção, não é possível alterar está senha futuramente!",
-                    textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: Colors.red))),
+            Text(
+              "Atenção, não é possível alterar está senha futuramente!",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
             AppWidget.formText(context, passwordInput, "Senha", Icons.lock, password: true),
             SizedBox(height: 10),
             AppWidget.formText(context, passwordConfirmationInput, "Confirmação da senha", Icons.lock, password: true),
             SizedBox(height: 15),
             AppWidget.button(
               "Cadastrar",
-              () {
+              voidCallback: () {
                 if (passwordInput.text == passwordConfirmationInput.text) {
-                  //Cria a conta caso entradas ok
+                  //Cria a conta caso entradas iguais
                   serviceConnection.createUserWithEmailAndPassword(emailInput.text, passwordInput.text).then(
                     (resp) {
                       if (resp != null) {
