@@ -20,7 +20,7 @@ class Teacher {
     await serviceCrudFireStore.getStudents(Teacher.id).then(
       (value) {
         Teacher.quantAlunos = value.length;
-        Teacher.quantQuestion = value[0]['listaAtv'].length;
+        Teacher.quantQuestion = value[0]['listaAtv'].lenght;
         listQuestionTentivas = new List<int>(value[0]['listaAtv'].length);
         for (int i = 0; i < listQuestionTentivas.length; i++) {
           listQuestionTentivas[i] = 0;

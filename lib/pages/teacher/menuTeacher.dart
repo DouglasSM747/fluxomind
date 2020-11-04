@@ -29,10 +29,10 @@ class _MenuTeacherPageState extends State<MenuTeacherPage> {
           SizedBox(height: 30),
           Center(
             child: AppWidget.button("Cadastrar estudante",
-                voidCallback: AppWidget.screenChange(
-                  context,
-                  RegisterStudentPage(),
-                ),
+                voidCallback: () => AppWidget.screenChange(
+                      context,
+                      RegisterStudentPage(),
+                    ),
                 sizeFont: 25,
                 width: widhScreen,
                 height: 70),
@@ -40,10 +40,10 @@ class _MenuTeacherPageState extends State<MenuTeacherPage> {
           SizedBox(height: 30),
           Center(
             child: AppWidget.button("Status Turma",
-                voidCallback: AppWidget.screenChange(
-                  context,
-                  StatusStudentPage(),
-                ),
+                voidCallback: () => AppWidget.screenChange(
+                      context,
+                      StatusStudentPage(),
+                    ),
                 sizeFont: 25,
                 width: widhScreen,
                 height: 70),
@@ -51,10 +51,10 @@ class _MenuTeacherPageState extends State<MenuTeacherPage> {
           SizedBox(height: 30),
           Center(
             child: AppWidget.button("Verificar contas",
-                voidCallback: AppWidget.screenChange(
-                  context,
-                  ListStudentsPage(),
-                ),
+                voidCallback: () => AppWidget.screenChange(
+                      context,
+                      ListStudentsPage(),
+                    ),
                 sizeFont: 25,
                 width: widhScreen,
                 height: 70),
@@ -62,10 +62,10 @@ class _MenuTeacherPageState extends State<MenuTeacherPage> {
           SizedBox(height: 30),
           Center(
             child: AppWidget.button("Criar Atividade",
-                voidCallback: AppWidget.screenChange(
-                  context,
-                  CreateQuestionPage(),
-                ),
+                voidCallback: () => AppWidget.screenChange(
+                      context,
+                      CreateQuestionPage(),
+                    ),
                 sizeFont: 25,
                 width: widhScreen,
                 height: 70),

@@ -41,8 +41,8 @@ class _LoginPageState extends State<LoginPage> {
   ServiceConnection serviceConnection = new ServiceConnection();
   ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
 
-  void validateLogin_GetDateUser() {
-    serviceConnection.signInWithEmailAndPassword(emailInput.text, passwordInput.text).then((value) async {
+  void validateLoginGetDateUser() async {
+    await serviceConnection.signInWithEmailAndPassword(emailInput.text, passwordInput.text).then((value) async {
       if (value != null) {
         serviceCrudFireStore.isValidUser(email: emailInput.text, tipoUser: tipoUserLogando).then((idUser) async {
           if (idUser != "") {
@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 20),
             radioButtons(),
             SizedBox(height: 20),
-            AppWidget.button("Entrar", voidCallback: validateLogin_GetDateUser, sizeFont: 25, width: screenWidth - 30)
+            AppWidget.button("Entrar", voidCallback: validateLoginGetDateUser, sizeFont: 25, width: screenWidth - 30)
           ],
         ),
       ),

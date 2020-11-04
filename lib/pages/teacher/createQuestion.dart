@@ -105,7 +105,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
               style: TextStyle(color: Colors.white),
             ),
             SizedBox(height: 10),
-            AppWidget.button("Inserir imagem", voidCallback: imgFromGallery(), sizeFont: 16),
+            AppWidget.button("Inserir imagem", voidCallback: () => imgFromGallery(), sizeFont: 16),
             SizedBox(height: 10),
             Container(
               height: 120,
@@ -120,7 +120,9 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
             SizedBox(height: 10),
             AppWidget.button(
               "Inserir questão",
-              voidCallback: addQuestionsCheckBox(),
+              voidCallback: () {
+                addQuestionsCheckBox();
+              },
               sizeFont: 16,
             ),
             SizedBox(height: 10),
@@ -132,6 +134,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                 separatorBuilder: (BuildContext context, int index) => Divider(),
                 itemBuilder: (context, index) {
                   return Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
@@ -158,7 +161,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                         },
                       ),
                       FlatButton(
-                        onPressed: removeQuestionCheckBox(index),
+                        onPressed: () => removeQuestionCheckBox(index),
                         child: Icon(
                           Icons.remove,
                           color: Colors.red,
@@ -171,7 +174,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
             ),
             AppWidget.button(
               "Criar Atividade",
-              voidCallback: createQuestion(),
+              voidCallback: () => createQuestion(),
             )
           ],
         ),
