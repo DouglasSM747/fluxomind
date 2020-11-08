@@ -81,6 +81,9 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
     for (int i = 0; i < listImagePath.length; i++) {
       await convertToBase64(listImagePath[i]).then((value) => atividade.pathImages.add(value));
     }
+    atividade.numErros = 0;
+    atividade.numTentativas = 0;
+    atividade.numErros = 0;
     atividade.concluded = false;
     atividade.message = textEditingControllerEnunciado.text;
     serviceCrudFireStore.insertQuestionToStudents(Teacher.id, atividade);
@@ -97,11 +100,12 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 30),
-            Text("Tela de criação de atividades", style: TextStyle(fontSize: 25, color: Colors.white)),
+            Text("Tela de criação de atividades", textAlign: TextAlign.center, style: TextStyle(fontSize: 25, color: Colors.white)),
             SizedBox(height: 10),
             AppWidget.formText(context, textEditingControllerEnunciado, "Digite o enunciado da questão", Icons.description),
             Text(
               " Selecione os fluxogramas que deseja adicionar à atividade",
+              textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white),
             ),
             SizedBox(height: 10),
@@ -134,12 +138,13 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                 separatorBuilder: (BuildContext context, int index) => Divider(),
                 itemBuilder: (context, index) {
                   return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: SizedBox(
-                          width: 250,
+                          width: 200,
                           child: TextFormField(
                             decoration: new InputDecoration(
                               hintStyle: TextStyle(color: Colors.white),
@@ -160,11 +165,14 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                           });
                         },
                       ),
-                      FlatButton(
-                        onPressed: () => removeQuestionCheckBox(index),
-                        child: Icon(
-                          Icons.remove,
-                          color: Colors.red,
+                      SizedBox(
+                        width: 40,
+                        child: FlatButton(
+                          onPressed: () => removeQuestionCheckBox(index),
+                          child: Icon(
+                            Icons.remove,
+                            color: Colors.red,
+                          ),
                         ),
                       )
                     ],

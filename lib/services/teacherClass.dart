@@ -18,17 +18,21 @@ class Teacher {
   static get loadStudentsInformations async {
     ServiceCrudFireStore serviceCrudFireStore = new ServiceCrudFireStore();
     await serviceCrudFireStore.getStudents(Teacher.id).then(
-      (value) {
+      (value) async {
         Teacher.quantAlunos = value.length;
-        Teacher.quantQuestion = value[0]['listaAtv'].lenght;
-        listQuestionTentivas = new List<int>(value[0]['listaAtv'].length);
+        // Teacher.quantQuestion = value[0]['listaAtv'];
+        await serviceCrudFireStore.getQuantidadeAtividades(Teacher.id).then((value) => quantQuestion = value);
+        listQuestionTentivas = new List<int>(quantQuestion);
         for (int i = 0; i < listQuestionTentivas.length; i++) {
           listQuestionTentivas[i] = 0;
         }
         for (int i = 0; i < value.length; i++) {
-          for (int j = 0; j < value[i]['listaAtv'].length; j++) {
+          for (int j = 0; j < quantQuestion; j++) {
             Map atividadeMap = jsonDecode(value[i]['listaAtv'][j]);
             Atividade atividade = Atividade.fromJson(atividadeMap);
+            if (!listQuestionTentivasIndividual.containsKey(value[i]['email'])) {
+              listQuestionTentivasIndividual[value[i]['email']] = 0;
+            }
             listQuestionTentivasIndividual[value[i]['email']] += atividade.numErros;
             numErros += atividade.numErros;
             listQuestionTentivas[j] += atividade.numErros;

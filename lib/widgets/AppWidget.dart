@@ -10,7 +10,7 @@ class AppWidget extends StatelessWidget {
 
   static Widget formText(BuildContext context, TextEditingController textEditingController, String text, IconData icon, {bool password = false}) {
     return SizedBox(
-      height: 60,
+      height: 70,
       width: MediaQuery.of(context).size.width - 30,
       child: Container(
         decoration: new BoxDecoration(color: Color.fromRGBO(242, 152, 41, 0.95), borderRadius: new BorderRadius.all(new Radius.circular(20))),

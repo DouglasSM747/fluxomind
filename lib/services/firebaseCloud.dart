@@ -73,6 +73,12 @@ class ServiceCrudFireStore {
     }
   }
 
+  Future<int> getQuantidadeAtividades(String idTeacher) async {
+    DocumentSnapshot documentSnapshot = await _db.collection("professor").doc(idTeacher).get();
+    List<dynamic> list = documentSnapshot.data()['listQuestionTeacher'];
+    return list.length;
+  }
+
   //******************** Cloud Student functions ********************//
 
   Future<dynamic> get getEmailTeacher async {

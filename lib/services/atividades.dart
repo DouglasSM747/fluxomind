@@ -86,8 +86,10 @@ class Atividade {
           if (listResult.length != 0) {
             Atividade.numberAtividades = listResult.length;
             for (var i = 0; i < listResult.length; i++) {
-              Map atividadeMap = jsonDecode(listResult[i]);
-              listAtividades.add(Atividade.fromJson(atividadeMap));
+              if (listResult[i] != "") {
+                Map atividadeMap = jsonDecode(listResult[i]);
+                listAtividades.add(Atividade.fromJson(atividadeMap));
+              }
             }
           }
         }

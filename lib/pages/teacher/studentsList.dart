@@ -38,9 +38,9 @@ class _ListStudentsPageState extends State<ListStudentsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 25),
-            Text("Lista de seus estudantes", style: TextStyle(fontSize: 30, color: Colors.white)),
+            Text("Lista de seus estudantes", textAlign: TextAlign.center, style: TextStyle(fontSize: 30, color: Colors.white)),
             Container(
-              height: MediaQuery.of(context).size.height,
+              height: 500,
               width: MediaQuery.of(context).size.width,
               child: ListView.separated(
                 itemCount: listEstudents.length,

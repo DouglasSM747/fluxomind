@@ -18,7 +18,7 @@ The system aims to allow teachers to create activities for their students to sol
 
 If you want to test the App in the Production mode, the installers are listed below:
 
-[Android .apk installer](https://drive.google.com/file/d/1_EhVj8RwEu6DQH6d5eoW1MrvDYR2qLOX/view?usp=sharing)
+[Android .apk installer](https://drive.google.com/drive/u/0/folders/1ttBttJdjOlaKPVSZBaLfTBoVYi-7mPZv)
 
 ## Functionalities
 
@@ -34,10 +34,13 @@ The functionalities are divided between the main (and only) users (Teacher and S
   - Solve an task.
 
 # Getting Started
+
 ### Prerequisites
+
 Having the flutter environment installed on your machine is important, as the entire system uses this framework.
 
 ### Installing
+
 **Cloning the Repository**
 
 ```
@@ -53,6 +56,7 @@ $ flutter pub get
 ```
 
 ### Running
+
 When the entire environment is installed, it is possible to run the project through:
 
 ```
@@ -60,7 +64,8 @@ $ flutter run
 ```
 
 ## Contributing
-You can make as many pull requests as you want, thank you. If you have any questions about the project: 
+
+You can make as many pull requests as you want, thank you. If you have any questions about the project:
 
 Email-me: douglas.sm747@gmail.com
 
@@ -68,5 +73,4 @@ Connect with me at [LinkedIn](https://www.linkedin.com/in/douglas-silva-b6790415
 
 Thank you!
 
-Special thanks to [Larissa Pessoa](https://github.com/larissapessoa)a for helping with art 
-
+Special thanks to [Larissa Pessoa](https://github.com/larissapessoa) for helping with art

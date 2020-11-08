@@ -25,6 +25,7 @@ class _SelectionPageState extends State<SelectionPage> {
           emailTeacher = value;
         });
       });
+      print(Atividade.numberAtividades);
     });
   }
 
@@ -38,7 +39,7 @@ class _SelectionPageState extends State<SelectionPage> {
         children: [
           SizedBox(height: 40),
           Text("Email do professor: " + emailTeacher, style: TextStyle(color: Colors.white)),
-          Center(child: Text("Selecione Uma Atividade", textAlign: TextAlign.center, style: TextStyle(fontSize: 32, color: Colors.white))),
+          Center(child: Text("Selecione Uma Atividade", textAlign: TextAlign.center, style: TextStyle(fontSize: 25, color: Colors.white))),
           loadAtividades(),
         ],
       ),
