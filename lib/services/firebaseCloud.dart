@@ -53,14 +53,15 @@ class ServiceCrudFireStore {
   attQuestionsTeacher(String idTeacher, String newAtividade) async {
     DocumentSnapshot documentSnapshot = await _db.collection("professor").doc(idTeacher).get();
     List<dynamic> list = documentSnapshot.data()['listQuestionTeacher'];
-    list.add(newAtividade);
-    await _db.collection("professor").doc(idTeacher).update({"listQuestionTeacher": list});
+    List<String> streetsList = new List<String>.from(list);
+    streetsList.add(newAtividade);
+    var user = _db.collection("professor").doc(idTeacher);
+    await user.update({'listQuestionTeacher': streetsList});
   }
 
   // Insere uma nova questão para os estundades. Obs.: Questão criada pelo professor
   insertQuestionToStudents(String idTeacher, Atividade newAtividade) async {
     String atividadeToJson = jsonEncode(newAtividade.toJson()); //Transforma a classe atividade em Json
-    print(atividadeToJson);
     QuerySnapshot querySnapshot = await _db.collection("aluno").get();
     attQuestionsTeacher(idTeacher, atividadeToJson); //Atualiza questão na lista do professor
     for (var i = 0; i < querySnapshot.docs.length; i++) {
